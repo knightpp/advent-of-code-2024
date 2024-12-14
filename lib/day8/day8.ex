@@ -1,4 +1,6 @@
 defmodule Aoc2024.Day8 do
+  # could not understand the task, so used some help
+  # watched https://youtu.be/r8uZrjx6JJ4 (but not the solution chapter)
   def part1() do
     part1(File.stream!("lib/day8/input.txt", trim: true))
   end

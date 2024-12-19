@@ -6,6 +6,8 @@ defmodule Aoc2024.Day11 do
   end
 
   def part1(input, repeat) do
+    :ets.new(__MODULE__, [:named_table, :set, :public])
+
     input =
       input
       |> parse_input()
@@ -34,8 +36,9 @@ defmodule Aoc2024.Day11 do
 
   defp next_generation(enum) do
     # enum
-    # |> Task.async_stream(&apply_rules/1)
+    # |> Task.async_stream(&memoized_apply_rules/1)
     # |> Stream.flat_map(fn {:ok, result} -> result end)
+
     # enum
     # |> Flow.from_enumerable()
     # |> Flow.flat_map(&apply_rules/1)
@@ -46,7 +49,19 @@ defmodule Aoc2024.Day11 do
     # |> Flow.flat_map(&Function.identity/1)
 
     enum
-    |> Stream.flat_map(&apply_rules/1)
+    |> Stream.flat_map(&memoized_apply_rules/1)
+  end
+
+  defp memoized_apply_rules(x) do
+    case :ets.lookup(__MODULE__, x) do
+      [{^x, ans}] ->
+        ans
+
+      [] ->
+        ans = apply_rules(x)
+        true = :ets.insert(__MODULE__, {x, ans})
+        ans
+    end
   end
 
   defp apply_rules(0), do: [1]
